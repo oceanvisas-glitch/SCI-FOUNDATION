@@ -1,0 +1,24 @@
+
+<!DOCTYPE html>
+<html lang="hi">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Course Details</title>
+<link rel="stylesheet" href="style.css"></head>
+<body>
+<header>
+  <div class="brand"><img src="logo.png" class="logo" alt="SCI"></div>
+  <nav><a href="index.html">Home</a> <a href="exam.html">Exam</a></nav>
+</header>
+<main class="container">
+  <h2 id="courseTitle">Course</h2>
+  <p id="courseDesc">Course description will appear here.</p>
+  <a id="start" class="btn" href="#">Start Exam</a>
+</main>
+<script>
+const params = new URLSearchParams(window.location.search);
+const course = params.get('course') || 'DCA';
+const info = {DCA:'Diploma in Computer Applications', ADCA:'Advanced Diploma in CA', PY:'Python Fundamentals'};
+document.getElementById('courseTitle').textContent = course + ' - ' + (info[course]||'Course');
+document.getElementById('start').href = 'exam.html?course=' + course;
+</script>
+</body>
+</html>

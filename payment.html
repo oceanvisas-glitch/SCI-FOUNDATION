@@ -1,0 +1,73 @@
+
+<!DOCTYPE html>
+<html lang="hi">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Payment</title>
+<link rel="stylesheet" href="style.css"></head>
+<body>
+<header>
+  <div class="brand"><img src="logo.png" class="logo" alt="SCI"></div>
+  <nav><a href="index.html">Home</a></nav>
+</header>
+<main class="container">
+  <h2>Payment for Certificate</h2>
+  <p>Scan this UPI QR या UPI ID से payment करें:</p>
+  <img src="upi_payment_qr.png" alt="UPI QR" class="qr">
+  <p><strong>UPI ID:</strong> 7528506479@kotak</p>
+  <div style="margin-top:16px">
+    <button class="btn" id="paidBtn">I Have Paid — Download Certificate</button>
+  </div>
+</main>
+
+<!-- jsPDF CDN -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script>
+// When user clicks paid, generate certificate PDF with logo and signature and trigger download.
+document.getElementById('paidBtn').addEventListener('click', async function(){
+  const name = localStorage.getItem('studentName') || prompt('Enter your full name for certificate:');
+  if(!name) return alert('Name required');
+  const course = localStorage.getItem('courseName') || (new URLSearchParams(window.location.search).get('course') || 'DCA');
+  const score = localStorage.getItem('score') || 'Passed';
+  const certId = 'SCI-' + Math.random().toString(36).substr(2,6).toUpperCase();
+  localStorage.setItem('certId', certId);
+  // load images
+  function loadImageToDataURL(url){
+    return new Promise((resolve,reject)=>{
+      const img = new Image();
+      img.crossOrigin = 'anonymous';
+      img.onload = ()=>{
+        const c = document.createElement('canvas');
+        c.width = img.width; c.height = img.height;
+        const ctx = c.getContext('2d'); ctx.drawImage(img,0,0);
+        resolve(c.toDataURL('image/png'));
+      };
+      img.onerror = reject;
+      img.src = url;
+    });
+  }
+  const logoData = await loadImageToDataURL('logo.png');
+  // signature we'll render text "Vivek Mishra" as signature style, and also try to use logo as decorative sign
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF({unit:'pt', format:'a4'});
+  doc.setFillColor(255,255,255);
+  // header logo
+  doc.addImage(logoData, 'PNG', 60, 40, 120, 60);
+  doc.setFontSize(22); doc.setFont('helvetica','bold'); doc.text('SCI FOUNDATION', 300, 70, {align:'center'});
+  doc.setFontSize(16); doc.setFont('helvetica','normal'); doc.text('Certificate of Completion', 300, 100, {align:'center'});
+  doc.setFontSize(12); doc.text(`This is to certify that`, 60, 170);
+  doc.setFontSize(18); doc.setFont('helvetica','bold'); doc.text(name, 60, 200);
+  doc.setFontSize(12); doc.setFont('helvetica','normal'); doc.text(`has successfully completed the course ${course} with score: ${score}.`, 60, 230);
+  const date = new Date().toLocaleDateString('en-IN', { day:'2-digit', month:'short', year:'numeric' });
+  doc.text(`Date: ${date}`, 60, 270);
+  doc.text(`Certificate ID: ${certId}`, 60, 290);
+  // signature text
+  doc.setFontSize(12); doc.text('__________________________', 400, 330);
+  doc.text('Vivek Mishra', 430, 350);
+  doc.text('Director, SCI FOUNDATION', 400, 366);
+  // save PDF
+  doc.save(`${certId}_SCI-Foundation-Certificate.pdf`);
+  // after download, redirect to certificate page (optional)
+  setTimeout(()=>{ window.location.href='certificate.html'; }, 500);
+});
+</script>
+</body>
+</html>

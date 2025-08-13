@@ -1,0 +1,26 @@
+
+<!DOCTYPE html>
+<html lang="hi">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Certificate</title>
+<link rel="stylesheet" href="style.css"></head>
+<body>
+<header>
+  <div class="brand"><img src="logo.png" class="logo" alt="SCI"></div>
+  <nav><a href="index.html">Home</a></nav>
+</header>
+<main class="container">
+  <h2>Your Certificate</h2>
+  <p id="info"></p>
+  <a class="btn" id="downloadBtn">Download Certificate PDF</a>
+</main>
+<script>
+document.getElementById('info').textContent = 'If you have paid earlier, your certificate ID: ' + (localStorage.getItem('certId') || 'N/A');
+document.getElementById('downloadBtn').addEventListener('click', function(){
+  // Just redirect to payment flow if not present
+  if(!localStorage.getItem('certId')) { alert('No certificate found. If you paid, please click Payment and then "I Have Paid".'); window.location.href='payment.html'; return; }
+  // Otherwise trigger print (or re-generate). For simplicity, open payment page to re-download.
+  window.location.href='payment.html';
+});
+</script>
+</body>
+</html>
